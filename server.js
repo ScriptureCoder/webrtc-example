@@ -13,7 +13,7 @@ const io = require('socket.io')(server,{
 const { ExpressPeerServer } = require('peer');
 const peerServer = ExpressPeerServer(server, {
     debug: true,
-    proxied:false
+    path: "/myapp",
 });
 const { v4: uuidV4 } = require('uuid')
 
