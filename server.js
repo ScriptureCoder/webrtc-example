@@ -10,15 +10,18 @@ const io = require('socket.io')(server,{
         methods: ["GET", "POST"]
     }
 })
+const { v4: uuidV4 } = require('uuid');
 const { ExpressPeerServer } = require('peer');
+
+//Setup Peer Server
 const peerServer = ExpressPeerServer(server, {
     debug: true,
-    path: "/myapp",
+    path: "/",
 });
-const { v4: uuidV4 } = require('uuid')
 
 app.use('/peerjs', peerServer);
 
+//setup ejs
 app.set('view engine', 'ejs')
 app.use(express.static('public'))
 
@@ -33,7 +36,6 @@ app.get('/:room', (req, res) => {
 io.on('connection', socket => {
     console.log("connected");
     socket.on('join-room', (roomId, userId) => {
-        console.log({roomId,userId});
         socket.join(roomId)
         socket.to(roomId).emit('user-connected', userId);
     })

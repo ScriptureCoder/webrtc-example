@@ -1,17 +1,16 @@
 const socket = io('/')
+
+// setup user video streem
 const videoGrid = document.getElementById('video-grid')
-// const myPeer = new Peer()
-const myPeer = new Peer(undefined, {
-    path: '/peerjs',
-    host: '/',
-    port: '3030'
-})
+const myPeer = new Peer()
 let myVideoStream;
 const myVideo = document.createElement('video')
 myVideo.muted = true;
 
+//an object to store all peer connections
 const peers = {}
 
+//user media setup
 navigator.mediaDevices.getUserMedia({
     video: true,
     audio: true
@@ -26,6 +25,7 @@ navigator.mediaDevices.getUserMedia({
         })
     })
 
+    //listen for new connection
     socket.on('user-connected', userId => {
         connectToNewUser(userId, stream)
     })
@@ -35,12 +35,12 @@ socket.on('user-disconnected', userId => {
     if (peers[userId]) peers[userId].close()
 })
 
+//join room when peer is ready
 myPeer.on('open', id => {
     socket.emit('join-room', ROOM_ID, id)
 })
 
 function connectToNewUser(userId, stream) {
-
     const call = myPeer.call(userId, stream)
     const video = document.createElement('video')
     call.on('stream', userVideoStream => {
@@ -49,7 +49,6 @@ function connectToNewUser(userId, stream) {
     call.on('close', () => {
         video.remove()
     })
-
     peers[userId] = call
 }
 
@@ -82,7 +81,6 @@ const playStop = () => {
         myVideoStream.getVideoTracks()[0].enabled = true;
     }
 }
-
 
 
 /*const shareScreen = async () => {
@@ -147,7 +145,6 @@ const playStop = () => {
         videoGrid.append(video2)
     }
 };*/
-
 
 const setMuteButton = () => {
     const html = `
